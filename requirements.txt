@@ -1,2 +1,7 @@
 nltk==3.8.1
 pandas==1.5.3
+sentence-transformers==2.2.2
+voyager==2.0.2
+jsonlines==4.0.0
+tqdm==4.66.1
+numpy==1.26.1

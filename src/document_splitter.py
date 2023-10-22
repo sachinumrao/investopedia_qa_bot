@@ -8,15 +8,18 @@ chunks can be a jsonl file with chunks containing following attributes:
 }
 """
 
+import json
+import os
+import time
 from pathlib import Path
-import os, time, json
+
 import jsonlines
+import pandas as pd
 from nltk.tokenize import sent_tokenize, word_tokenize
 from tqdm.auto import tqdm
-import pandas as pd
 
 RAW_FILES_PATH = Path("~/Data/Investopedia/investopedia.csv")
-OUTPUT_FILEPATH = Path("~/Data/Investopedia/investopedia_chunks.jsonl")
+OUTPUT_FILEPATH = Path("./../data/investopedia_chunks.jsonl")
 
 DEBUG = os.environ.get("DEBUG", 0)
 
@@ -33,6 +36,8 @@ def read_data():
 
 
 def chunkify(data_df: pd.DataFrame):
+    max_word_count = 350
+    chunks = []
     print("Chunking data...")
     for _, row in tqdm(data_df.iterrows(), total=data_df.shape[0]):
         text = row["Text"]
@@ -42,10 +47,9 @@ def chunkify(data_df: pd.DataFrame):
 
         # aggregate sentecnes into chunks of size ~350
         counter = 0
-        chunks = []
+
         len_counter = 0
         curr_sents = []
-        max_word_count = 350
 
         for s in sents:
             n = len(word_tokenize(s))
@@ -92,7 +96,7 @@ def main():
     chunks = chunkify(data_df)
 
     # save chunks
-    with jsonlines.open("investopedia_chunks.jsonl", mode="w") as writer:
+    with jsonlines.open(OUTPUT_FILEPATH, mode="w") as writer:
         for c in chunks:
             writer.write(c)
 
@@ -102,7 +106,6 @@ if __name__ == "__main__":
 
 
 ## TODO
-# fix output file save method
 # add support for command line args for input and output files, overlap window
-# experiment with spacy for sentecne tokenization
+# experiment with spacy for sentence tokenization
 # support overlap window in chunks

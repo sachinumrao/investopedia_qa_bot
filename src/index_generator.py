@@ -48,3 +48,9 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+## TODO
+# implement CRUD wrapper on vouyager index
+# iterate over chunk data to generate embeddings
+# save embeddings in index

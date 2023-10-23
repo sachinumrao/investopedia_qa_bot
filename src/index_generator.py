@@ -1,9 +1,10 @@
 import os
-import time
 import sqlite3
+import time
 
 import jsonlines
 import numpy as np
+from tqdm.auto import tqdm
 
 from embedding_generator import EmbeddingGenerator
 from vector_db import VectorDatabase
@@ -11,6 +12,7 @@ from vector_db import VectorDatabase
 DB_NAME = "./../data/chunk_db.db"
 TABLE_NAME = "investopedia_chunks"
 INDEX_NAME = "./../data/investopedia_index1.voy"
+N_DIM = 384
 
 DEBUG = os.environ.get("DEBUG", "0")
 
@@ -36,10 +38,20 @@ def generate_index():
     eg = EmbeddingGenerator()
     eg.load_model()
 
-    # create a vector database
-    vd = VectorDatabase(INDEX_NAME)
+    # initialize a vector database
+    vd = VectorDatabase()
+    vd.create_new_index(n_dim=N_DIM)
 
-    pass
+    # iterate over chunks to store embeddings
+    for idx, content in tqdm(chunk_data, total=len(chunk_data)):
+        embd = eg.get_embedding(content)
+        _ = vd.add_array_to_index(embd)
+
+        if DEBUG == "1":
+            print("Shape of embeddings: ", embd.shape)
+
+    # save index
+    vd.save_index_on_disk(INDEX_NAME)
 
 
 def main():

@@ -1,4 +1,8 @@
+import os
+
 from sentence_transformers import SentenceTransformer
+
+DEBUG = os.environ.get("DEBUG", 0)
 
 
 class EmbeddingGenerator:
@@ -11,4 +15,12 @@ class EmbeddingGenerator:
 
     def get_embedding(self, text):
         embd = self.model.encode(text)
+
+        if DEBUG == "1":
+            print("Input Text: ")
+            print(text)
+            print("Embedding: ")
+            print(embd)
+            print("Embedding Shape: ", embd.shape)
+
         return embd
